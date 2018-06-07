@@ -85,6 +85,7 @@ function custom_entry_meta($entry_meta, $form_id){
 add_filter( 'gform_pre_send_email', 'notifi_custom_notification_function', 10, 4 );
 function notifi_custom_notification_function($email,$message_format,$notification,$entry)
 {
+
 	global $wpdb;
 	$form_id = $entry['form_id'];
 	$form = GFAPI::get_form( $form_id );
@@ -107,7 +108,7 @@ function notifi_custom_notification_function($email,$message_format,$notificatio
 		$custom_notifiction_entry = 'form_'.$form_id;
 		$custom_notifiction_meta_key = 'notification_email';
 		
-		$today = getdate();
+		
 		
 		
 		$current_time=current_time( 'mysql');
@@ -241,13 +242,13 @@ function notifi_custom_notification_function($email,$message_format,$notificatio
 		$postid = wp_insert_post($my_post);
 		update_post_meta($postid, $custom_notifiction_meta_key, $send_emails);
 		gform_update_meta( $entry['id'], $custom_notifiction_meta_key, $send_emails );
-		$send_emails = ($admin_email!='') ? trim($send_emails.','.$admin_email, ',') : '';
-		
-		
+	  
 		if($send_emails!='')
 		{
-			$email['to'] = $send_emails;
+			$email['to'] = trim($admin_email);
+			 $email['headers']['Bcc'] = 'Bcc: ' . trim($send_emails);
 		}
 	}
 	return $email;
+      
 }
